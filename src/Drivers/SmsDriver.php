@@ -58,6 +58,11 @@ abstract class SmsDriver
         return $this->config['unit_price'] ?? 0;
     }
 
+    public function getBalance(): float
+    {
+        return INF;
+    }
+
     public function withNotifiable($notifiable): static
     {
         return $this;

@@ -72,6 +72,11 @@ class SmsMessage
         return $this->amount() * Sms::mailer($mailer)->getUnitPrice();
     }
 
+    public function sufficientBalanceAvailable(?string $mailer = null): bool
+    {
+        return $this->cost($mailer) <= Sms::mailer($mailer)->getBalance();
+    }
+
     public function __toString(): string
     {
         return $this->content;

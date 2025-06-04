@@ -23,4 +23,11 @@ class MessagebirdDriver extends SmsDriver
 
         $response = $this->client->messages->create($messagebird);
     }
+
+    public function getBalance(): float
+    {
+        $response = $this->client->balance->read();
+
+        return $response->amount;
+    }
 }
