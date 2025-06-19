@@ -60,4 +60,11 @@ class ArrayDriverTest extends TestCase
         $driver->flush();
         $this->assertEquals(new Collection, $driver->messages());
     }
+
+    #[Test]
+    public function it_returns_inf_balance()
+    {
+        $driver = new ArrayDriver;
+        $this->assertSame(INF, $driver->getBalance());
+    }
 }

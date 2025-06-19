@@ -88,7 +88,14 @@ class SmsDriverTest extends TestCase
     }
 
     #[Test]
-    public function it_exposes_a_withNotifiable_method_for_use_in_notification_channel()
+    public function it_returns_default_inf_balance()
+    {
+        $driver = new SucceedingDriver;
+        $this->assertSame(INF, $driver->getBalance());
+    }
+
+    #[Test]
+    public function it_exposes_a_with_notifiable_method_for_use_in_notification_channel()
     {
         $driver = new SucceedingDriver;
 

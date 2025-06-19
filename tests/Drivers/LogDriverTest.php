@@ -35,4 +35,11 @@ class LogDriverTest extends TestCase
         $driver = new LogDriver(Log::getFacadeRoot(), ['level' => 'warning']);
         $driver->to('0123')->send('foo');
     }
+
+    #[Test]
+    public function it_returns_inf_balance()
+    {
+        $driver = new LogDriver(Log::getFacadeRoot());
+        $this->assertSame(INF, $driver->getBalance());
+    }
 }

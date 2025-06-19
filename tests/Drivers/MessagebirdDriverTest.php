@@ -3,6 +3,7 @@
 namespace Propaganistas\LaravelSms\Tests\Drivers;
 
 use MessageBird\Client;
+use MessageBird\Objects\Balance;
 use MessageBird\Objects\Message;
 use MessageBird\Resources\Messages;
 use Mockery;
@@ -55,5 +56,20 @@ class MessagebirdDriverTest extends TestCase
 
         $driver = new MessagebirdDriver($mock, ['originator' => 'bar']);
         $driver->to('0123')->send('foo');
+    }
+
+    #[Test]
+    public function it_connects_with_messagebird_when_returning_balance()
+    {
+        $mock = Mockery::mock(Client::class);
+        $balanceMock = Mockery::mock(Balance::class);
+
+        $mock->balance = $balanceMock;
+        $mock->balance->amount = 200;
+
+        $balanceMock->shouldReceive('read')->once()->withNoArgs()->andReturn($balanceMock);
+
+        $driver = new MessagebirdDriver($mock);
+        $driver->getBalance();
     }
 }

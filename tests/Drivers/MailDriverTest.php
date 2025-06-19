@@ -97,4 +97,13 @@ class MailDriverTest extends TestCase
             new Address('bar@example.com', 'John Doe'),
         ], $this->getProtectedProperty($driver, 'mailRecipients'));
     }
+
+    #[Test]
+    public function it_returns_inf_balance()
+    {
+        $mailer = Mail::getFacadeRoot()->mailer();
+
+        $driver = new MailDriver($mailer);
+        $this->assertSame(INF, $driver->getBalance());
+    }
 }
