@@ -34,14 +34,12 @@ class SnsDriver extends SmsDriver
             ];
         }
 
-        $parameters = [
-            'Message' => (string) $this->message,
-            'PhoneNumber' => $this->recipient,
-            'MessageAttributes' => $attributes,
-        ];
-
         try {
-            $this->client->publish($parameters);
+            $this->client->publish([
+                'Message' => (string) $this->message,
+                'PhoneNumber' => $this->recipient,
+                'MessageAttributes' => $attributes,
+            ]);
         } catch (AwsException $e) {
             Log::error('SMS delivery failed', array_merge([
                 'error' => $e->getMessage(),

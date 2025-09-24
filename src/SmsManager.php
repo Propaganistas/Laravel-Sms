@@ -108,16 +108,16 @@ class SmsManager
             throw new Exception('The Messagebird library is not installed. Please run `composer require messagebird/php-rest-api` to install it.');
         }
 
-        $client = $this->container->make(MessagebirdClient::class, [$config['access_key']]);
-
-        return new MessagebirdDriver($client, $config);
+        return new MessagebirdDriver(
+            new MessagebirdClient($config['access_key']), $config
+        );
     }
 
     protected function createSnsDriver(array $config): SnsDriver
     {
         $config = array_merge(
             $this->config->get('services.sns', []),
-            ['version' => 'latest', 'service' => 'email'],
+            ['version' => 'latest'],
             $config
         );
 
@@ -131,9 +131,9 @@ class SmsManager
             throw new Exception('The AWS SDK is not installed. Please run `composer require aws/aws-sdk-php` to install it.');
         }
 
-        $client = $this->container->make(SnsClient::class, [$config]);
-
-        return new SnsDriver($client, $config);
+        return new SnsDriver(
+            new SnsClient($config), $config
+        );
     }
 
     protected function callCustomCreator($mailer)

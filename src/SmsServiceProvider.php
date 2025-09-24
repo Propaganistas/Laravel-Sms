@@ -30,6 +30,6 @@ class SmsServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__.'/../config/config.php' => $this->app->configPath('sms.php'),
-        ], 'config');
+        ], 'laravel-sms');
     }
 }
