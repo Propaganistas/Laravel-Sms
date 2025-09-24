@@ -2,11 +2,14 @@
 
 namespace Propaganistas\LaravelSms;
 
+use Aws\Sns\SnsClient;
 use Closure;
+use Exception;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Log\LogManager;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use MessageBird\Client as MessagebirdClient;
@@ -15,6 +18,7 @@ use Propaganistas\LaravelSms\Drivers\LogDriver;
 use Propaganistas\LaravelSms\Drivers\MailDriver;
 use Propaganistas\LaravelSms\Drivers\MessagebirdDriver;
 use Propaganistas\LaravelSms\Drivers\SmsDriver;
+use Propaganistas\LaravelSms\Drivers\SnsDriver;
 use Psr\Log\LoggerInterface;
 
 class SmsManager
@@ -26,8 +30,7 @@ class SmsManager
     public function __construct(
         protected Container $container,
         protected Config $config
-    ) {
-    }
+    ) {}
 
     public function getDefaultMailer()
     {
@@ -96,10 +99,41 @@ class SmsManager
 
     protected function createMessagebirdDriver(array $config): MessagebirdDriver
     {
-        $client = $this->container->make(MessagebirdClient::class);
-        $client->setAccessKey($config['access_key']);
+        $config = array_merge(
+            $this->config->get('services.messagebird', []),
+            $config
+        );
+
+        if (! class_exists(MessagebirdClient::class)) {
+            throw new Exception('The Messagebird library is not installed. Please run `composer require messagebird/php-rest-api` to install it.');
+        }
+
+        $client = $this->container->make(MessagebirdClient::class, [$config['access_key']]);
 
         return new MessagebirdDriver($client, $config);
+    }
+
+    protected function createSnsDriver(array $config): SnsDriver
+    {
+        $config = array_merge(
+            $this->config->get('services.sns', []),
+            ['version' => 'latest', 'service' => 'email'],
+            $config
+        );
+
+        $config['key'] = $config['key'] ?? $config['access_key'];
+
+        if (! empty($config['key']) && ! empty($config['secret'])) {
+            $config['credentials'] = Arr::only($config, ['key', 'secret', 'token']);
+        }
+
+        if (! class_exists(SnsClient::class)) {
+            throw new Exception('The AWS SDK is not installed. Please run `composer require aws/aws-sdk-php` to install it.');
+        }
+
+        $client = $this->container->make(SnsClient::class, [$config]);
+
+        return new SnsDriver($client, $config);
     }
 
     protected function callCustomCreator($mailer)

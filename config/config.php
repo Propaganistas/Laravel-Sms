@@ -36,6 +36,14 @@ return [
             'unit_price' => env('MESSAGEBIRD_UNIT_PRICE', 0),
         ],
 
+        'sns' => [
+            'driver' => 'sns',
+            'access_key' => env('SNS_ACCESS_KEY'),
+            'secret' => env('SNS_SECRET'),
+            'sender_id' => env('SNS_SENDER_ID'),
+            'unit_price' => env('SNS_UNIT_PRICE', 0),
+        ],
+
         'mail' => [
             'driver' => 'mail',
             'mailer' => env('SMS_MAIL_MAILER'),

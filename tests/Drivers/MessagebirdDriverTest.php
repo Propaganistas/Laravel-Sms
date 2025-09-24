@@ -8,6 +8,7 @@ use MessageBird\Client;
 use MessageBird\Objects\Balance;
 use MessageBird\Objects\Message;
 use MessageBird\Objects\MessageResponse;
+use MessageBird\Objects\Recipients;
 use MessageBird\Resources\Messages;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
@@ -30,13 +31,16 @@ class MessagebirdDriverTest extends TestCase
         $messagesMock = Mockery::mock(Messages::class);
 
         $mock->messages = $messagesMock;
+        $response = new MessageResponse;
+        $response->recipients = new Recipients;
+        $response->recipients->items = [];
 
         $messagesMock->shouldReceive('create')->once()->withArgs(function ($message) {
             return $message instanceof Message
                 && $message->originator === null
                 && $message->recipients === ['0123']
                 && $message->body === 'foo';
-        });
+        })->andReturn($response);
 
         $driver = new MessagebirdDriver($mock);
         $driver->to('0123')->send('foo');
@@ -154,7 +158,8 @@ JSON
     #[Test]
     public function it_throws_when_all_failed_delivery()
     {
-        $this->expectException(Exception::class, 'SMS delivery failed');
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('SMS delivery failed');
 
         $mock = Mockery::mock(Client::class);
         $messagesMock = Mockery::mock(Messages::class);
@@ -240,13 +245,16 @@ JSON
         $messagesMock = Mockery::mock(Messages::class);
 
         $mock->messages = $messagesMock;
+        $response = new MessageResponse;
+        $response->recipients = new Recipients;
+        $response->recipients->items = [];
 
         $messagesMock->shouldReceive('create')->once()->withArgs(function ($message) {
             return $message instanceof Message
                 && $message->originator === 'bar'
                 && $message->recipients === ['0123']
                 && $message->body === 'foo';
-        });
+        })->andReturn($response);
 
         $driver = new MessagebirdDriver($mock, ['originator' => 'bar']);
         $driver->to('0123')->send('foo');

@@ -2,9 +2,9 @@
 
 namespace Propaganistas\LaravelSms\Tests;
 
+use Aws\Sns\SnsClient;
 use InvalidArgumentException;
 use MessageBird\Client;
-use Mockery;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\StreamHandler;
 use PHPUnit\Framework\Attributes\Test;
@@ -13,6 +13,7 @@ use Propaganistas\LaravelSms\Drivers\ArrayDriver;
 use Propaganistas\LaravelSms\Drivers\LogDriver;
 use Propaganistas\LaravelSms\Drivers\MailDriver;
 use Propaganistas\LaravelSms\Drivers\MessagebirdDriver;
+use Propaganistas\LaravelSms\Drivers\SnsDriver;
 
 class SmsManagerTest extends TestCase
 {
@@ -88,24 +89,53 @@ class SmsManagerTest extends TestCase
     }
 
     #[Test]
-    public function it_resolves_messagebird_mailer()
-    {
-        $manager = $this->app['sms.manager'];
-
-        $this->assertInstanceOf(MessagebirdDriver::class, $manager->mailer('messagebird'));
-    }
-
-    #[Test]
     public function it_resolves_messagebird_mailer_with_configured_access_key()
     {
         $this->app['config']->set('sms.mailers.messagebird.access_key', 'foo');
 
-        $mock = Mockery::mock(Client::class);
-        $mock->shouldReceive('setAccessKey')->once()->withArgs(['foo']);
+        $this->app->bind(Client::class, function ($app, $params) use (&$capturedParams) {
+            $capturedParams = $params;
 
-        $this->app->instance(Client::class, $mock);
+            return new Client(...$params);
+        });
 
-        $this->app['sms.manager']->mailer('messagebird');
+        $driver = $this->app['sms.manager']->mailer('messagebird');
+
+        $this->assertInstanceOf(MessagebirdDriver::class, $driver);
+
+        $this->assertEquals('foo', $capturedParams[0]);
+    }
+
+    #[Test]
+    public function it_resolves_sns_mailer_with_configured_credentials()
+    {
+        $this->app['config']->set('sms.mailers.sns.key', 'foo');
+        $this->app['config']->set('sms.mailers.sns.secret', 'bar');
+
+        $this->app->bind(SnsClient::class, function ($app, $params) use (&$capturedParams) {
+            $capturedParams = $params;
+
+            return new SnsClient(...$params);
+        });
+
+        $driver = $this->app['sms.manager']->mailer('sns');
+
+        $this->assertInstanceOf(SnsDriver::class, $driver);
+
+        $this->assertEquals([
+            'credentials' => [
+                'key' => 'foo',
+                'secret' => 'bar',
+            ],
+            'version' => 'latest',
+            'service' => 'email',
+            'driver' => 'sns',
+            'access_key' => null,
+            'secret' => 'bar',
+            'originator' => null,
+            'unit_price' => 0,
+            'key' => 'foo',
+        ], $capturedParams[0]);
     }
 
     #[Test]
