@@ -17,8 +17,7 @@ class SnsDriverTest extends TestCase
     #[Test]
     public function it_constructs()
     {
-        $this->assertInstanceOf(SnsDriver::class, new SnsDriver(new SnsClient([])));
-        $this->assertInstanceOf(SnsDriver::class, new SnsDriver(new SnsClient([]), ['foo' => 'bar']));
+        $this->assertInstanceOf(SnsDriver::class, new SnsDriver(new SnsClient(['region' => 'eu-west-1'])));
     }
 
     #[Test]
@@ -39,7 +38,7 @@ class SnsDriverTest extends TestCase
             ],
         ]);
 
-        $driver = new SnsDriver($mock);
+        $driver = new SnsDriver($mock, ['region' => 'eu-west-1']);
         $driver->to('+32470123456')->send('foo');
     }
 
@@ -65,7 +64,7 @@ class SnsDriverTest extends TestCase
             ],
         ]);
 
-        $driver = new SnsDriver($mock, ['originator' => 'bar']);
+        $driver = new SnsDriver($mock, ['originator' => 'bar', 'region' => 'eu-west-1']);
         $driver->to('+32470123456')->send('foo');
     }
 
@@ -94,7 +93,7 @@ class SnsDriverTest extends TestCase
 
         $mock->shouldReceive('publish')->once()->andThrow($e);
 
-        $driver = new SnsDriver($mock);
+        $driver = new SnsDriver($mock, ['region' => 'eu-west-1']);
         $driver->to('0123')->send('foo');
     }
 
@@ -110,14 +109,14 @@ class SnsDriverTest extends TestCase
 
         $mock->shouldReceive('publish')->once()->andThrow($e);
 
-        $driver = new SnsDriver($mock);
+        $driver = new SnsDriver($mock, ['region' => 'eu-west-1']);
         $driver->to('0123')->send('foo');
     }
 
     #[Test]
     public function it_returns_inf_balance()
     {
-        $driver = new SnsDriver(new SnsClient([]));
+        $driver = new SnsDriver(new SnsClient(['region' => 'eu-west-1']));
         $this->assertSame(INF, $driver->getBalance());
     }
 }
