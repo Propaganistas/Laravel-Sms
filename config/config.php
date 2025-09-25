@@ -24,7 +24,7 @@ return [
     | their respective settings. Several examples have been configured for
     | you and you are free to add your own as your application requires.
     |
-    | Supported: "messagebird", "mail", "log", "array"
+    | Supported: "messagebird", "sns", "mail", "log", "array"
     |
     */
 
