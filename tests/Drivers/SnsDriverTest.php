@@ -43,7 +43,7 @@ class SnsDriverTest extends TestCase
     }
 
     #[Test]
-    public function it_connects_with_sns_with_configured_originator()
+    public function it_connects_with_sns_with_configured_sender_id()
     {
         $mock = Mockery::mock(SnsClient::class);
 
@@ -64,7 +64,7 @@ class SnsDriverTest extends TestCase
             ],
         ]);
 
-        $driver = new SnsDriver($mock, ['originator' => 'bar', 'region' => 'eu-west-1']);
+        $driver = new SnsDriver($mock, ['sender_id' => 'bar', 'region' => 'eu-west-1']);
         $driver->to('+32470123456')->send('foo');
     }
 
