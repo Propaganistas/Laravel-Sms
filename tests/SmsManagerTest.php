@@ -103,6 +103,7 @@ class SmsManagerTest extends TestCase
     {
         $this->app['config']->set('sms.mailers.sns.key', 'foo');
         $this->app['config']->set('sms.mailers.sns.secret', 'bar');
+        $this->app['config']->set('sms.mailers.sns.region', 'eu-west-1');
 
         $driver = $this->app['sms.manager']->mailer('sns');
 
