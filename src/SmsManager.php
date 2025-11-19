@@ -57,7 +57,7 @@ class SmsManager
         }
 
         if (isset($this->customCreators[$name])) {
-            return $this->callCustomCreator($name);
+            return $this->customCreators[$name]($config);
         }
 
         $driver = $config['driver'];
@@ -134,11 +134,6 @@ class SmsManager
         return new SnsDriver(
             new SnsClient($config), $config
         );
-    }
-
-    protected function callCustomCreator($mailer)
-    {
-        return $this->customCreators[$mailer]($this->container);
     }
 
     public function extend($mailer, Closure $callback)
