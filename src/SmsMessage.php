@@ -3,7 +3,6 @@
 namespace Propaganistas\LaravelSms;
 
 use OutOfBoundsException;
-use Propaganistas\LaravelSms\Facades\Sms;
 
 class SmsMessage
 {
@@ -65,16 +64,6 @@ class SmsMessage
         }
 
         throw new OutOfBoundsException('Sms message exceeds maximum allowed length.');
-    }
-
-    public function cost(?string $mailer = null): float
-    {
-        return $this->amount() * Sms::mailer($mailer)->getUnitPrice();
-    }
-
-    public function sufficientBalanceAvailable(?string $mailer = null): bool
-    {
-        return $this->cost($mailer) <= Sms::mailer($mailer)->getBalance();
     }
 
     public function __toString(): string

@@ -38,7 +38,12 @@ abstract class SmsDriver
 
         if ($this->dispatcher !== null) {
             $this->dispatcher->dispatch(
-                new SmsSending($this->recipient, $this->message)
+                new SmsSending(
+                    $this->recipient,
+                    (string) $this->message,
+                    $this->message->amount(),
+                    $this->estimateCost($this->message)
+                )
             );
         }
 
@@ -46,7 +51,12 @@ abstract class SmsDriver
 
         if ($this->dispatcher !== null) {
             $this->dispatcher->dispatch(
-                new SmsSent($this->recipient, $this->message)
+                new SmsSent(
+                    $this->recipient,
+                    (string) $this->message,
+                    $this->message->amount(),
+                    $this->estimateCost($this->message)
+                )
             );
         }
     }
@@ -61,6 +71,11 @@ abstract class SmsDriver
     public function getBalance(): float
     {
         return INF;
+    }
+
+    public function estimateCost(SmsMessage $message): float
+    {
+        return $message->amount() * $this->getUnitPrice();
     }
 
     public function withNotifiable($notifiable): static

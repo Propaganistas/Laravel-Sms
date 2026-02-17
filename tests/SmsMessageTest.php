@@ -97,30 +97,4 @@ class SmsMessageTest extends TestCase
             $this->assertSame($expected + 1, $message->amount());
         }
     }
-
-    #[Test]
-    #[TestWith([0, 'x', 0])]
-    #[TestWith([100, 'x', 0.5])]
-    #[TestWith([100, '🔥', 1])]
-    public function it_calculates_cost_for_default_mailer(int $length, string $character, float $expected)
-    {
-        $default = $this->app['config']->get('sms.default');
-        $this->app['config']->set("sms.mailers.{$default}.unit_price", 0.5);
-
-        $message = new SmsMessage(str_repeat($character, $length));
-        $this->assertSame($expected, $message->cost());
-    }
-
-    #[Test]
-    #[TestWith([0, 'x', 0])]
-    #[TestWith([100, 'x', 0.75])]
-    #[TestWith([100, '🔥', 1.5])]
-    public function it_calculates_cost_for_chosen_mailer(int $length, string $character, float $expected)
-    {
-        $this->app['config']->set('sms.mailers.foo.driver', 'array');
-        $this->app['config']->set('sms.mailers.foo.unit_price', 0.75);
-
-        $message = new SmsMessage(str_repeat($character, $length));
-        $this->assertSame($expected, $message->cost('foo'));
-    }
 }

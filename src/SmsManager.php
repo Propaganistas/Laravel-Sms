@@ -57,19 +57,28 @@ class SmsManager
         }
 
         if (isset($this->customCreators[$name])) {
-            return $this->customCreators[$name]($config);
+            return $this->makeDriver(
+                $this->customCreators[$name]($config)
+            );
         }
 
         $driver = $config['driver'];
         $method = 'create'.Str::studly($driver).'Driver';
 
         if (method_exists($this, $method)) {
-            return $this->{$method}($config)->setDispatcher(
-                $this->container->make(Dispatcher::class)
+            return $this->makeDriver(
+                $this->{$method}($config)
             );
         }
 
         throw new InvalidArgumentException("Driver [$driver] not supported.");
+    }
+
+    protected function makeDriver(SmsDriver $driver): SmsDriver
+    {
+        return $driver->setDispatcher(
+            $this->container->make(Dispatcher::class)
+        );
     }
 
     protected function createArrayDriver(array $config): ArrayDriver

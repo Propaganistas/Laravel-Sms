@@ -6,9 +6,12 @@ use Exception;
 use Illuminate\Support\Facades\Event;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\TestWith;
 use Propaganistas\LaravelSms\Drivers\SmsDriver;
 use Propaganistas\LaravelSms\Events\SmsSending;
 use Propaganistas\LaravelSms\Events\SmsSent;
+use Propaganistas\LaravelSms\Facades\Sms;
+use Propaganistas\LaravelSms\SmsMessage;
 use Propaganistas\LaravelSms\Tests\TestCase;
 
 class SmsDriverTest extends TestCase
@@ -92,6 +95,19 @@ class SmsDriverTest extends TestCase
     {
         $driver = new SucceedingDriver;
         $this->assertSame(INF, $driver->getBalance());
+    }
+
+    #[Test]
+    #[TestWith([0, 'x', 0])]
+    #[TestWith([100, 'x', 0.75])]
+    #[TestWith([100, '🔥', 1.5])]
+    public function it_estimates_cost(int $length, string $character, float $expected)
+    {
+        $this->app['config']->set('sms.mailers.foo.driver', 'array');
+        $this->app['config']->set('sms.mailers.foo.unit_price', 0.75);
+
+        $message = new SmsMessage(str_repeat($character, $length));
+        $this->assertSame($expected, Sms::mailer('foo')->estimateCost($message));
     }
 
     #[Test]

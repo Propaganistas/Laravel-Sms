@@ -2,13 +2,12 @@
 
 namespace Propaganistas\LaravelSms\Events;
 
-use Propaganistas\LaravelSms\SmsMessage;
-
 class SmsSending
 {
     public function __construct(
         public $recipient,
-        public SmsMessage $message
-    ) {
-    }
+        public string $message,
+        public int $amount,
+        public float $cost
+    ) {}
 }
