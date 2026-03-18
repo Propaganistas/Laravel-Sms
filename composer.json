@@ -2,21 +2,20 @@
   "name": "propaganistas/laravel-sms",
   "require": {
     "php": "^8.2",
-    "illuminate/config": "^11.0|^12.0",
-    "illuminate/container": "^11.0|^12.0",
+    "illuminate/config": "^11.0|^12.0|^13.0",
+    "illuminate/container": "^11.0|^12.0|^13.0",
     "illuminate/contracts": "*",
-    "illuminate/log": "^11.2|^12.0",
-    "illuminate/mail": "^11.2|^12.0",
-    "illuminate/notifications": "^11.2|^12.0",
-    "illuminate/support": "^11.0|^12.0",
-    "psr/log": "^3.0"
+    "illuminate/log": "^11.2|^12.0|^13.0",
+    "illuminate/mail": "^11.2|^12.0|^13.0",
+    "illuminate/notifications": "^11.2|^12.0|^13.0",
+    "illuminate/support": "^11.0|^12.0|^13.0"
   },
   "require-dev": {
     "aws/aws-sdk-php": "^3.356",
     "laravel/pint": "^1.15",
     "messagebird/php-rest-api": "^3.1",
     "mockery/mockery": "^1.6",
-    "orchestra/testbench": "^9.0|^10.0",
+    "orchestra/testbench": "^9.0|^10.0|^11.0",
     "phpunit/phpunit": "^11.0"
   },
   "autoload": {
